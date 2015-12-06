@@ -7,8 +7,9 @@ import play.api.data.format.{Formats => PlayFormats}
 import play.api.data.format.Formatter
 import play.api.data.format.Formats.stringFormat
 
-object Formats {
+object Formats extends JavaTimeFormats with Formats
 
+trait Formats {
   /**
    * Helper for formatters binders
    * @param parse Function parsing a String value into a T value, throwing an exception in case of failure
@@ -16,28 +17,13 @@ object Formats {
    * @param key Key name of the field to parse
    * @param data Field data
    */
-  private def parsing[T](parse: String => T, errMsg: String, errArgs: Seq[Any])(key: String, data: Map[String, String]): Either[Seq[FormError], T] = {
+  protected def parsing[T](parse: String => T, errMsg: String, errArgs: Seq[Any])(key: String, data: Map[String, String]): Either[Seq[FormError], T] = {
     PlayFormats.stringFormat.bind(key, data).right.flatMap { s =>
       scala.util.control.Exception.allCatch[T]
         .either(parse(s))
         .left.map(e => Seq(FormError(key, errMsg, errArgs)))
     }
   }
-
-  private def numberFormatter[T](convert: String => T, real: Boolean = false): Formatter[T] = {
-    val (formatString, errorString) = if (real) ("format.real", "error.real") else ("format.numeric", "error.number")
-    new Formatter[T] {
-      override val format = Some(formatString -> Nil)
-      def bind(key: String, data: Map[String, String]) =
-        parsing(convert, errorString, Nil)(key, data)
-      def unbind(key: String, value: T) = Map(key -> value.toString)
-    }
-  }
-
-  /**
-   * Default formatter for the `BigInt` type.
-   */
-  implicit def bigIntFormat: Formatter[BigInt] = numberFormatter(BigInt(_))
 
   /**
    * Default formatter for the `Char` type.
@@ -53,6 +39,69 @@ object Formats {
         }, errorString, Nil)(key, data)
       def unbind(key: String, value: Char) = Map(key -> value.toString)
     }
+  }
+}
+
+trait JavaTimeFormats extends Formats {
+  import java.time.{ LocalDate, LocalDateTime, ZoneId }
+  import java.time.format.DateTimeFormatter
+
+  /**
+   * Formatter for the `java.time.LocalDate` type.
+   *
+   * @param pattern a date pattern as specified in `java.time.format.DateTimeFormatter`.
+   */
+  def localDateFormat(formatter: DateTimeFormatter): Formatter[LocalDate] = new Formatter[LocalDate] {
+
+    def jodaLocalDateParse(data: String) = LocalDate.parse(data, formatter)
+
+    override val format = Some(("format.date", Seq(formatter.toString)))
+
+    def bind(key: String, data: Map[String, String]) = parsing(jodaLocalDateParse, "error.date", Nil)(key, data)
+
+    def unbind(key: String, value: LocalDate) = Map(key -> value.format(formatter))
+  }
+
+  /**
+   * Default formatter for `java.time.LocalDate` type with pattern `yyyy-MM-dd` as `java.time.format.DateTimeFormatter.ISO_LOCAL_DATE`.
+   */
+  implicit val localDateFormat: Formatter[LocalDate] = localDateFormat(DateTimeFormatter.ISO_LOCAL_DATE)
+
+
+  /**
+   * Formatter for the `java.time.LocalDateTime` type.
+   *
+   * @param pattern a date pattern as specified in `java.time.format.DateTimeFormatter`.
+   */
+  def localDateTimeFormat(formatter: DateTimeFormatter): Formatter[LocalDateTime] = new Formatter[LocalDateTime] {
+
+    def jodaLocalDateParse(data: String) = LocalDateTime.parse(data, formatter)
+
+    override val format = Some(("format.date", Seq(formatter.toString)))
+
+    def bind(key: String, data: Map[String, String]) = parsing(jodaLocalDateParse, "error.date", Nil)(key, data)
+
+    def unbind(key: String, value: LocalDateTime) = Map(key -> value.format(formatter))
+  }
+
+  /**
+   * Default formatter for `java.time.LocalDateTime` type with pattern `yyyy-MM-ddTHH:mm:ss` as `java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME`.
+   */
+  implicit val localDateTimeFormat: Formatter[LocalDateTime] = localDateTimeFormat(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+
+
+  /**
+   * Formatter for the `java.time.ZoneId` type.
+   */
+  implicit val zoneIdFormat: Formatter[ZoneId] = new Formatter[ZoneId] {
+
+    def parse(data: String) = ZoneId.of(data)
+
+    override val format = Some(("format.zoneId", Nil))
+
+    def bind(key: String, data: Map[String, String]) = parsing(parse, "error.zoneId", Nil)(key, data)
+
+    def unbind(key: String, value: ZoneId) = Map(key -> value.toString)
   }
 
 }
