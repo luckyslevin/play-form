@@ -1,5 +1,6 @@
 package ejisan.play.data.validation
 
+import scala.util.matching.Regex
 import play.api.data.validation._
 
 object Constraints extends play.api.data.validation.Constraints {
@@ -120,27 +121,49 @@ object Constraints extends play.api.data.validation.Constraints {
     }
   }
 
+  val username: Constraint[String] = username()
 
-  val alphabetical = pattern(
-    """^[a-zA-Z]+$""".r,
-    "constraint.alphabetical",
-    "error.alphabetical")
-  val symbolical = pattern(
-    """^[a-zA-Z]+$""".r,
-    "constraint.symbolical",
-    "error.symbolical")
-  val digit = pattern(
-    """^[0-9]+$""".r,
-    "constraint.digit",
-    "error.digit")
-  def url(protocol: String = "https?|http|ftp|ftps|file") = pattern(
-    """^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]""".r,
+  def username(regex: Regex = """^[a-zA-Z0-9][a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]*$""".r): Constraint[String]
+    = pattern(regex, "constraint.username", "error.username")
+
+  val password: Constraint[String] = password()
+
+  def password(
+    hasUpperCase: Boolean = true, hasSymbolical: Boolean = true, hasDigit: Boolean = true, minLength: Int = 8): Constraint[String] = {
+    val upperCase = if (hasUpperCase) """(?=.*[A-Z])""" else ""
+    val symbolical = if (hasSymbolical) """(?=.*[\.!#$%&'*+/=?^_`{|}~-])""" else ""
+    val digit = if (hasDigit) """(?=.*[0-9])""" else ""
+    pattern(
+      s"""^.*(?=.{$minLength,})(?=.*[a-z])${upperCase}${symbolical}${digit}(?=.*).*$$""".r,
+      "constraint.password",
+      "error.password")
+  }
+
+  val nonSpace: Constraint[String]
+    = pattern("""[^\s]+""".r, "constraint.nonSpace", "error.nonSpace")
+
+  val alphabetical: Constraint[String]
+    = pattern("""^[a-zA-Z ]*$""".r, "constraint.alphabetical", "error.alphabetical")
+
+  val symbolical: Constraint[String]
+    = pattern("""^[ -/:-@\[-\`\{-\~]*$""".r, "constraint.symbolical", "error.symbolical")
+
+  val digit: Constraint[String]
+    = pattern("""^[0-9]*$""".r, "constraint.digit", "error.digit")
+
+  def url(protocols: String = "https?|http|ftp|ftps|file"): Constraint[String] = pattern(
+    s"""^($protocols)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]""".r,
     "constraint.url",
     "error.url")
-  val httpUrl = url("http")
-  val httpsUrl = url("https")
-  val ftpUrl = url("ftp")
-  val ftpsUrl = url("ftps")
-  val fileUrl = url("file")
+
+  val httpUrl: Constraint[String] = url("http")
+
+  val httpsUrl: Constraint[String] = url("https")
+
+  val ftpUrl: Constraint[String] = url("ftp")
+
+  val ftpsUrl: Constraint[String] = url("ftps")
+
+  val fileUrl: Constraint[String] = url("file")
 
 }

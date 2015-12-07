@@ -1,5 +1,6 @@
 package ejisan.play.data
 
+import scala.util.matching.Regex
 import play.api.data.format.Formats._
 import play.api.data.format.Formatter
 import play.api.data.Forms._
@@ -102,7 +103,53 @@ trait HelperForms {
    * Form("country" -> selection(number))
    * }}}
    */
-  def selection[T](mapping: Mapping[T]): Mapping[T] = OptionalMapping(mapping).verifying(Constraints.some).transform(_.get, Option(_))
+  final def selection[T](mapping: Mapping[T]): Mapping[T] = OptionalMapping(mapping).verifying(Constraints.some).transform(_.get, Option(_))
+
+
+  /**
+   * Defines a mapping for username.
+   *
+   * For example:
+   * {{{
+   * Form("username" -> usernameText)
+   * }}}
+   */
+  final val usernameText: Mapping[String] = usernameText()
+
+  /**
+   * Defines a mapping for username.
+   *
+   * For example:
+   * {{{
+   * Form("username" -> usernameText(caseInsensitive = false, minLength = 8))
+   * }}}
+   */
+  final def usernameText(caseInsensitive: Boolean = true, minLength: Int = 5, maxLength: Int = Int.MaxValue): Mapping[String]
+    = text(minLength, maxLength).verifying(Constraints.username) transform (
+      username => if (caseInsensitive) username.toUpperCase else username, username => username)
+
+
+  /**
+   * Defines a mapping for password.
+   *
+   * For example:
+   * {{{
+   * Form("password" -> passwordText)
+   * }}}
+   */
+  final val passwordText: Mapping[String] = passwordText()
+
+  /**
+   * Defines a mapping for password.
+   *
+   * For example:
+   * {{{
+   * Form("password" -> passwordText(minLength = 8, hasUpperCase = true, hasSymbolical = false, hasDigit = true))
+   * }}}
+   */
+  final def passwordText(minLength: Int = 8, maxLength: Int = Int.MaxValue, hasUpperCase: Boolean = true, hasSymbolical: Boolean = true, hasDigit: Boolean = true): Mapping[String]
+    = text(minLength, maxLength) verifying Constraints.password(hasUpperCase, hasSymbolical, hasDigit, minLength)
+
 }
 
 trait JavaTimeForms extends HelperForms {
@@ -378,6 +425,16 @@ trait TextForms {
    *
    * Example:
    * {{{
+   * Form("alphabets" -> alphabeticalText)
+   * }}}
+   */
+  final val alphabeticalText: Mapping[String] = alphabeticalText()
+
+  /**
+   * Constructs a simple mapping for alphabetical text field.
+   *
+   * Example:
+   * {{{
    * Form("alphabets" -> alphabeticalText(minLength=3))
    * }}}
    *
@@ -386,6 +443,16 @@ trait TextForms {
    */
   final def alphabeticalText(minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
     = text(minLength, maxLength) verifying Constraints.alphabetical
+
+  /**
+   * Constructs a simple mapping for required alphabetical text field.
+   *
+   * Example:
+   * {{{
+   * Form("alphabets" -> nonEmptyAlphabeticalText)
+   * }}}
+   */
+  final val nonEmptyAlphabeticalText: Mapping[String] = nonEmptyAlphabeticalText()
 
   /**
    * Constructs a simple mapping for required alphabetical text field.
@@ -407,6 +474,16 @@ trait TextForms {
    *
    * Example:
    * {{{
+   * Form("symbols" -> symbolicalText)
+   * }}}
+   */
+  final val symbolicalText: Mapping[String] = symbolicalText()
+
+  /**
+   * Constructs a simple mapping for symbolical text field.
+   *
+   * Example:
+   * {{{
    * Form("symbols" -> symbolicalText(minLength=3))
    * }}}
    *
@@ -415,6 +492,17 @@ trait TextForms {
    */
   final def symbolicalText(minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
     = text(minLength, maxLength) verifying Constraints.symbolical
+
+  /**
+   * Constructs a simple mapping for required symbolical text field.
+   *
+   * Example:
+   * {{{
+   * Form("symbols" -> nonEmptySymbolicalText)
+   * }}}
+   */
+  final val nonEmptySymbolicalText: Mapping[String] = nonEmptySymbolicalText()
+
   /**
    * Constructs a simple mapping for required symbolical text field.
    *
@@ -435,6 +523,16 @@ trait TextForms {
    *
    * Example:
    * {{{
+   * Form("phone" -> digit)
+   * }}}
+   */
+  final val digit: Mapping[String] = digit()
+
+  /**
+   * Constructs a simple mapping for a digit field. (A digit field allows to start with `0`)
+   *
+   * Example:
+   * {{{
    * Form("phone" -> digit(minLength=10, maxLength=11))
    * }}}
    *
@@ -443,6 +541,16 @@ trait TextForms {
    */
   final def digit(minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
     = text(minLength, maxLength) verifying Constraints.digit
+
+  /**
+   * Constructs a simple mapping for required digit field. (A digit field allows to start with `0`)
+   *
+   * Example:
+   * {{{
+   * Form("phone" -> nonEmptyDigit)
+   * }}}
+   */
+  final val nonEmptyDigit: Mapping[String] = nonEmptyDigit()
 
   /**
    * Constructs a simple mapping for required digit field. (A digit field allows to start with `0`)
@@ -464,7 +572,17 @@ trait TextForms {
    *
    * Example:
    * {{{
-   * Form("website" -> digit(protocols="https?|http", minLength=5, maxLength=255))
+   * Form("website" -> url)
+   * }}}
+   */
+  final val url: Mapping[String] = url()
+
+  /**
+   * Constructs a simple mapping for URL text field.
+   *
+   * Example:
+   * {{{
+   * Form("website" -> url(protocols="https?|http", minLength=5, maxLength=255))
    * }}}
    *
    * @param minLength Text min length.
@@ -472,6 +590,17 @@ trait TextForms {
    */
   final def url(protocols: String = "https?|http|ftp|ftps|file", minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
     = text(minLength, maxLength) verifying Constraints.url(protocols)
+
+  /**
+   * Constructs a simple mapping for required URL text field.
+   *
+   * Example:
+   * {{{
+   * Form("website" -> nonEmptyUrl)
+   * }}}
+   */
+  final val nonEmptyUrl: Mapping[String] = nonEmptyUrl()
+
   /**
    * Constructs a simple mapping for required URL text field.
    *
