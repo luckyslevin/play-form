@@ -421,6 +421,55 @@ trait TextForms {
 
 
   /**
+   * Constructs a simple mapping for ASCII text field.
+   *
+   * Example:
+   * {{{
+   * Form("ascii" -> asciiText)
+   * }}}
+   */
+  final val asciiText: Mapping[String] = asciiText()
+
+  /**
+   * Constructs a simple mapping for ASCII text field.
+   *
+   * Example:
+   * {{{
+   * Form("alphabets" -> asciiText(minLength=3))
+   * }}}
+   *
+   * @param minLength Text min length.
+   * @param maxLength Text max length.
+   */
+  final def asciiText(minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
+    = text(minLength, maxLength) verifying Constraints.ascii
+
+  /**
+   * Constructs a simple mapping for required ASCII text field.
+   *
+   * Example:
+   * {{{
+   * Form("alphabets" -> nonEmptyAsciiText)
+   * }}}
+   */
+  final val nonEmptyAsciiText: Mapping[String] = nonEmptyAsciiText()
+
+  /**
+   * Constructs a simple mapping for required ASCII text field.
+   *
+   * Example:
+   * {{{
+   * Form("alphabets" -> nonEmptyAsciiText(minLength=3))
+   * }}}
+   *
+   * @param minLength Text min length.
+   * @param maxLength Text max length.
+   */
+  final def nonEmptyAsciiText(minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
+    = asciiText(minLength, maxLength) verifying Constraints.nonEmpty
+
+
+  /**
    * Constructs a simple mapping for alphabetical text field.
    *
    * Example:

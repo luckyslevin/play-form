@@ -131,7 +131,7 @@ object Constraints extends play.api.data.validation.Constraints {
   def password(
     hasUpperCase: Boolean = true, hasSymbolical: Boolean = true, hasDigit: Boolean = true, minLength: Int = 8): Constraint[String] = {
     val upperCase = if (hasUpperCase) """(?=.*[A-Z])""" else ""
-    val symbolical = if (hasSymbolical) """(?=.*[\.!#$%&'*+/=?^_`{|}~-])""" else ""
+    val symbolical = if (hasSymbolical) """(?=.*[ -/:-@\[-\`\{-\~])""" else ""
     val digit = if (hasDigit) """(?=.*[0-9])""" else ""
     pattern(
       s"""^.*(?=.{$minLength,})(?=.*[a-z])${upperCase}${symbolical}${digit}(?=.*).*$$""".r,
@@ -141,6 +141,9 @@ object Constraints extends play.api.data.validation.Constraints {
 
   val nonSpace: Constraint[String]
     = pattern("""[^\s]+""".r, "constraint.nonSpace", "error.nonSpace")
+
+  val ascii: Constraint[String]
+    = pattern("""^[\\u0000-\\u007F]*$""".r, "constraint.ascii", "error.ascii")
 
   val alphabetical: Constraint[String]
     = pattern("""^[a-zA-Z ]*$""".r, "constraint.alphabetical", "error.alphabetical")
