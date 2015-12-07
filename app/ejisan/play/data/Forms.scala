@@ -665,7 +665,6 @@ trait TextForms {
     = url(protocols, minLength, maxLength) verifying Constraints.nonEmpty
 }
 
-
 trait NumberForms {
   @inline private[this] final def numberMapping[N: Numeric: Formatter](
     typeMin: N, typeMax: N, min: N, max: N, strict: Boolean): Mapping[N] = {
@@ -732,4 +731,134 @@ trait NumberForms {
    */
   final def floatNumber(min: Float = Float.MinValue, max: Float = Float.MaxValue, strict: Boolean = false): Mapping[Float] =
     numberMapping[Float](Float.MinValue, Float.MaxValue, min, max, strict)
+}
+
+trait JapaneseSupportForms {
+  /**
+   * Constructs a simple mapping for zenkaku(全角) text field.
+   *
+   * Example:
+   * {{{
+   * Form("zenkaku" -> zenkakuText)
+   * }}}
+   */
+  final val zenkakuText: Mapping[String] = zenkakuText()
+
+  /**
+   * Constructs a simple mapping for zenkaku(全角) text field.
+   *
+   * Example:
+   * {{{
+   * Form("zenkaku" -> zenkakuText(minLength=3, maxLength=10))
+   * }}}
+   */
+  final def zenkakuText(minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
+    = text(minLength, maxLength) verifying Constraints.zenkaku
+
+  /**
+   * Constructs a simple mapping for required zenkaku(全角) text field.
+   *
+   * Example:
+   * {{{
+   * Form("zenkaku" -> nonEmptyZenkakuText)
+   * }}}
+   */
+  final val nonEmptyZenkakuText: Mapping[String] = nonEmptyZenkakuText()
+
+  /**
+   * Constructs a simple mapping for required zenkaku(全角) text field.
+   *
+   * Example:
+   * {{{
+   * Form("zenkaku" -> nonEmptyZenkakuText(minLength=3, maxLength=10))
+   * }}}
+   */
+  final def nonEmptyZenkakuText(minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
+    = zenkakuText(minLength, maxLength) verifying Constraints.nonEmpty
+
+
+  /**
+   * Constructs a simple mapping for hiragana(ひらがな) text field.
+   *
+   * Example:
+   * {{{
+   * Form("hiragana" -> hiraganaText)
+   * }}}
+   */
+  final val hiraganaText: Mapping[String] = hiraganaText()
+
+  /**
+   * Constructs a simple mapping for hiragana(ひらがな) text field.
+   *
+   * Example:
+   * {{{
+   * Form("hiragana" -> hiraganaText(minLength=3, maxLength=10))
+   * }}}
+   */
+  final def hiraganaText(minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
+    = text(minLength, maxLength) verifying Constraints.hiragana
+
+  /**
+   * Constructs a simple mapping for required hiragana(ひらがな) text field.
+   *
+   * Example:
+   * {{{
+   * Form("hiragana" -> nonEmptyHiraganaText)
+   * }}}
+   */
+  final val nonEmptyHiraganaText: Mapping[String] = nonEmptyHiraganaText()
+
+  /**
+   * Constructs a simple mapping for required hiragana(ひらがな) text field.
+   *
+   * Example:
+   * {{{
+   * Form("hiragana" -> nonEmptyHiraganaText(minLength=3, maxLength=10))
+   * }}}
+   */
+  final def nonEmptyHiraganaText(minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
+    = hiraganaText(minLength, maxLength) verifying Constraints.nonEmpty
+
+
+  /**
+   * Constructs a simple mapping for katakana(カタカナ) text field.
+   *
+   * Example:
+   * {{{
+   * Form("katakana" -> katakanaText)
+   * }}}
+   */
+  final val katakanaText: Mapping[String] = katakanaText()
+
+  /**
+   * Constructs a simple mapping for katakana(カタカナ) text field.
+   *
+   * Example:
+   * {{{
+   * Form("katakana" -> katakanaText(minLength=3, maxLength=10))
+   * }}}
+   */
+  final def katakanaText(minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
+    = text(minLength, maxLength) verifying Constraints.katakana
+
+  /**
+   * Constructs a simple mapping for required katakana(カタカナ) text field.
+   *
+   * Example:
+   * {{{
+   * Form("katakana" -> nonEmptyKatakanaText)
+   * }}}
+   */
+  final val nonEmptyKatakanaText: Mapping[String] = nonEmptyKatakanaText()
+
+  /**
+   * Constructs a simple mapping for required katakana(カタカナ) text field.
+   *
+   * Example:
+   * {{{
+   * Form("katakana" -> nonEmptyKatakanaText(minLength=3, maxLength=10))
+   * }}}
+   */
+  final def nonEmptyKatakanaText(minLength: Int = 0, maxLength: Int = Int.MaxValue): Mapping[String]
+    = katakanaText(minLength, maxLength) verifying Constraints.nonEmpty
 }

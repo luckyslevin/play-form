@@ -233,3 +233,32 @@ trait TextPatternConstraints {
     "constraint.url",
     "error.url")
 }
+
+trait JapaneseConstraints {
+  /**
+   * Defines a `zenkaku` constraint for `String` typed zenkaku(全角) values.
+   *
+   * '''name'''[constraint.zenkaku]
+   * '''error'''[error.zenkaku]
+   */
+  final val zenkaku: Constraint[String]
+    = Constraints.pattern("""^[^ -~｡-ﾟ]*$""".r, "constraint.zenkaku", "error.zenkaku")
+
+  /**
+   * Defines a `hiragana` constraint for `String` typed hiragana(ひらがな) values.
+   *
+   * '''name'''[constraint.hiragana]
+   * '''error'''[error.hiragana]
+   */
+  final val hiragana: Constraint[String]
+    = Constraints.pattern("""^[　|\s|ぁ-ゟ|゠|ー]*$""".r, "constraint.hiragana", "error.hiragana")
+
+  /**
+   * Defines a `katakana` constraint for `String` typed katakana(カタカナ) values.
+   *
+   * '''name'''[constraint.katakana]
+   * '''error'''[error.katakana]
+   */
+  final val katakana: Constraint[String]
+    = Constraints.pattern("""^[　|\s|゠-ヿ]*$""".r, "constraint.katakana", "error.katakana")
+}
