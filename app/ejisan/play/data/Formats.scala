@@ -28,17 +28,19 @@ trait Formats {
   /**
    * Default formatter for the `Char` type.
    */
-  implicit def charFormat: Formatter[Char] = {
-    val (formatString, errorString) = ("format.char", "error.char")
-    new Formatter[Char] {
-      override val format = Some(formatString -> Nil)
-      def bind(key: String, data: Map[String, String]) =
-        parsing({ str =>
-          if (str.length == 1) str.toCharArray()(0)
-          else throw new Exception("Length of string for `Char` type must be one")
-        }, errorString, Nil)(key, data)
-      def unbind(key: String, value: Char) = Map(key -> value.toString)
+  implicit val charFormat = new Formatter[Char] {
+
+    override val format = Some("format.char" -> Nil)
+
+    def bind(key: String, data: Map[String, String]) = {
+      PlayFormats.stringFormat.bind(key, data).right.flatMap { value =>
+        scala.util.control.Exception.allCatch[Char]
+          .either(if (value.length == 1) value.toCharArray()(0) else throw new Exception)
+          .left.map(e => Seq(FormError(key, "error.char", Nil)))
+      }
     }
+
+    def unbind(key: String, value: Char) = Map(key -> value.toString)
   }
 }
 

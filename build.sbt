@@ -1,6 +1,6 @@
 name := """play-form"""
 
-version := "2.0.2"
+version := "2.0.3"
 
 scalaVersion := "2.11.7"
 
@@ -12,4 +12,4 @@ publishTo := Some(Resolver.file("ejisan", file(Path.userHome.absolutePath+"/Deve
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-libraryDependencies += "joda-time" % "joda-time" % "2.7"
+libraryDependencies += "joda-time" % "joda-time" % "2.9.2"

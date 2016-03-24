@@ -15,6 +15,7 @@ object Forms
   with NumberForms
   with HelperForms
   with JavaTimeForms
+  with JodaTimeForms
 
 trait HelperForms {
 
@@ -414,10 +415,10 @@ trait TextForms {
    *
    * For example:
    * {{{
-   * Form("gender" -> character)
+   * Form("gender" -> char)
    * }}}
    */
-  final val character: Mapping[Char] = of[Char]
+  final val char: Mapping[Char] = of[Char]
 
 
   /**
