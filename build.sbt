@@ -1,10 +1,10 @@
 name := """play-form"""
 
-version := "2.0.3"
+version := "3.0.0"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.11.7")
+crossScalaVersions := Seq("2.11.8")
 
 organization := "com.ejisan"
 

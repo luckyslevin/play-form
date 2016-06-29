@@ -411,17 +411,6 @@ trait JodaTimeForms extends HelperForms {
 
 trait TextForms {
   /**
-   * Constructs a simple mapping for a character.
-   *
-   * For example:
-   * {{{
-   * Form("gender" -> char)
-   * }}}
-   */
-  final val char: Mapping[Char] = of[Char]
-
-
-  /**
    * Constructs a simple mapping for ASCII text field.
    *
    * Example:
