@@ -4,3 +4,9 @@
 /project/project/
 /project/target/
 /target/
+
+.metals
+.vscode
+.bloop
+project/.bloop
+.bsp

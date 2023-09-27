@@ -31,9 +31,10 @@ trait HelperForms {
    * }}}
    */
   final def matching[T](s1: (String, Mapping[T]), s2: (String, Mapping[T])): Mapping[T] = {
-    tuple(s1, s2).verifying(Constraint[(T, T)]("constraint.match")({ s: (T, T) =>
-      if (s._1 != s._2) Invalid(ValidationError("error.match")) else Valid
-    })).transform({ case (s1, _) => s1 }, (s1: T) => (s1, s1))
+    tuple(s1, s2)
+    .verifying(Constraint[(T, T)](Some("constraint.match"), Seq()){ case (s1: T, s2: T) =>
+      if (s1 != s2) Invalid(ValidationError("error.match")) else Valid
+    }).transform({ case (s1, _) => s1 }, (s1: T) => (s1, s1))
   }
 
   /**
@@ -178,8 +179,8 @@ trait JavaTimeForms extends HelperForms {
    *
    * @param pattern the date pattern, as defined in `java.time.format.DateTimeFormatter`
    */
-  final def localDate(formatter: DateTimeFormatter): Mapping[LocalDate]
-    = of[LocalDate] as localDateFormat(formatter)
+  // final def localDate(formatter: DateTimeFormatter): Mapping[LocalDate]
+  //   = of[LocalDate] as localDateFormat(formatter)
 
   /**
    * Constructs a simple mapping for a date field (mapped as `java.time.LocalDate type`).
@@ -191,8 +192,8 @@ trait JavaTimeForms extends HelperForms {
    *
    * @param pattern the date pattern, as defined in `java.time.format.DateTimeFormatter`
    */
-  final def localDate(pattern: String): Mapping[LocalDate]
-    = of[LocalDate] as localDateFormat(DateTimeFormatter.ofPattern(pattern))
+  // final def localDate(pattern: String): Mapping[LocalDate]
+  //   = of[LocalDate] as localDateFormat(DateTimeFormatter.ofPattern(pattern))
 
   /**
    * Constructs a separated parameter mapping for a date field (mapped as `java.time.LocalDate type`).
@@ -250,8 +251,8 @@ trait JavaTimeForms extends HelperForms {
    *
    * @param pattern the date and time pattern, as defined in `java.time.format.DateTimeFormatter`
    */
-  final def localDateTime(formatter: DateTimeFormatter): Mapping[LocalDateTime]
-    = of[LocalDateTime] as localDateTimeFormat(formatter)
+  // final def localDateTime(formatter: DateTimeFormatter): Mapping[LocalDateTime]
+  //   = of[LocalDateTime] as localDateTimeFormat(formatter)
 
   /**
    * Constructs a simple mapping for a date and time field (mapped as `java.time.LocalDateTime type`).
@@ -263,8 +264,8 @@ trait JavaTimeForms extends HelperForms {
    *
    * @param pattern the date and time pattern, as defined in `java.time.format.DateTimeFormatter`
    */
-  final def localDateTime(pattern: String): Mapping[LocalDateTime]
-    = of[LocalDateTime] as localDateTimeFormat(DateTimeFormatter.ofPattern(pattern))
+  // final def localDateTime(pattern: String): Mapping[LocalDateTime]
+  //   = of[LocalDateTime] as localDateTimeFormat(DateTimeFormatter.ofPattern(pattern))
 
   /**
    * Constructs a separated parameter mapping for a date and time field (mapped as `java.time.LocalDateTime type`).
@@ -325,7 +326,7 @@ trait JavaTimeForms extends HelperForms {
 }
 
 trait JodaTimeForms extends HelperForms {
-  import org.joda.time.{ DateTime, LocalDate }
+  import java.time.{ LocalDateTime, LocalDate }
 
   /**
    * Constructs a separated parameter mapping for a date field (mapped as `org.joda.time.LocalDate type`).
@@ -357,8 +358,8 @@ trait JodaTimeForms extends HelperForms {
     (month._1, month._2 verifying Constraints.month),
     (day._1, day._2 verifying Constraints.day)
   ) transform (
-    { case (year, month, day) => new LocalDate(year, month, day) },
-    ld => { (ld.year.get, ld.monthOfYear.get, ld.dayOfMonth.get) }
+    { case (year, month, day) => LocalDate.of(year, month, day) },
+    { (ld: LocalDate) => (ld.getYear, ld.getMonthValue, ld.getDayOfMonth) }
   )
 
 
@@ -396,7 +397,7 @@ trait JodaTimeForms extends HelperForms {
     hour: (String, Mapping[Int]) = ("hour", hourNumber),
     minute: (String, Mapping[Int]) = ("minute", minuteNumber),
     second: (String, Mapping[Int]) = ("second", secondNumber)
-  ): Mapping[DateTime] = tuple(
+  ): Mapping[LocalDateTime] = tuple(
     (year._1, year._2 verifying Constraints.year),
     (month._1, month._2 verifying Constraints.month),
     (day._1, day._2 verifying Constraints.day),
@@ -404,8 +405,8 @@ trait JodaTimeForms extends HelperForms {
     (minute._1, minute._2 verifying Constraints.minute),
     (second._1, second._2 verifying Constraints.second)
   ) transform (
-    { case (year, month, day, hour, minute, second) => new DateTime(year, month, day, hour, minute, second) },
-    dt => { (dt.year.get, dt.monthOfYear.get, dt.dayOfMonth.get, dt.getHourOfDay, dt.getMinuteOfHour, dt.getSecondOfMinute) }
+    { case (year, month, day, hour, minute, second) => LocalDateTime.of(year, month, day, hour, minute, second) },
+    (dt: LocalDateTime) => (dt.getYear, dt.getMonthValue, dt.getDayOfMonth, dt.getHour, dt.getMinute, dt.getSecond)
   )
 }
 

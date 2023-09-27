@@ -18,7 +18,7 @@ trait Formats {
    * @param data Field data
    */
   protected def parsing[T](parse: String => T, errMsg: String, errArgs: Seq[Any])(key: String, data: Map[String, String]): Either[Seq[FormError], T] = {
-    PlayFormats.stringFormat.bind(key, data).right.flatMap { s =>
+    PlayFormats.stringFormat.bind(key, data).flatMap { s =>
       scala.util.control.Exception.allCatch[T]
         .either(parse(s))
         .left.map(e => Seq(FormError(key, errMsg, errArgs)))

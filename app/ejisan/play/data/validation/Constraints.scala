@@ -17,9 +17,13 @@ trait HelperConstraints {
    * '''name'''[constraint.required]
    * '''error'''[error.required]
    */
+
   final val nonEmptyChar: Constraint[Char] = Constraint[Char]("constraint.required") { o =>
-    if (o == null) Invalid(ValidationError("error.required"))
-    else Valid
+    Option(o) match {
+      case Some(char) => Valid // handle the case when o is an Option[Char]
+      case None => Invalid(ValidationError("error.required")) // handle the case when o is None
+      case _ => Valid // handle the case when o is a Char value
+    }
   }
 
 
@@ -94,13 +98,18 @@ trait DateTimeConstraints {
    * '''name'''[constraint.year]
    * '''error'''[error.year]
    */
+
   final val year: Constraint[Int] = Constraint[Int]("constraint.year") { o =>
-    if (o == null) Invalid(ValidationError("error.year")) else try {
-      val year = o.toInt
-      if (year > 0 && year < 10000) Valid
-      else Invalid(ValidationError("error.year"))
-    } catch {
-      case _: Throwable => Invalid(ValidationError("error.year"))
+    Option(o) match {
+      case Some(value) =>
+        try {
+          val year = value.toInt
+          if (year > 0 && year < 10000) Valid
+          else Invalid(ValidationError("error.year"))
+        } catch {
+          case _: Throwable => Invalid(ValidationError("error.year"))
+        }
+      case None => Invalid(ValidationError("error.year"))
     }
   }
 
@@ -111,28 +120,36 @@ trait DateTimeConstraints {
    * '''error'''[error.month]
    */
   final val month: Constraint[Int] = Constraint[Int]("constraint.month") { o =>
-    if (o == null) Invalid(ValidationError("error.month")) else try {
-      val month = o.toInt
-      if (month > 0 && month <= 12) Valid
-      else Invalid(ValidationError("error.month"))
-    } catch {
-      case _: Throwable => Invalid(ValidationError("error.month"))
+    Option(o) match {
+      case Some(value) =>
+        try {
+          val month = value.toInt
+          if (month > 0 && month <= 12) Valid
+          else Invalid(ValidationError("error.month"))
+        } catch {
+          case _: Throwable => Invalid(ValidationError("error.month"))
+        }
+      case None => Invalid(ValidationError("error.month"))
     }
   }
-
   /**
    * Defines a `day` constraint for `Int` typed day values.
    *
    * '''name'''[constraint.day]
    * '''error'''[error.day]
    */
+
   final val day: Constraint[Int] = Constraint[Int]("constraint.day") { o =>
-    if (o == null) Invalid(ValidationError("error.day")) else try {
-      val day = o.toInt
-      if (day > 0 && day <= 31) Valid
-      else Invalid(ValidationError("error.day"))
-    } catch {
-      case _: Throwable => Invalid(ValidationError("error.day"))
+    Option(o) match {
+      case None => Invalid(ValidationError("error.day"))
+      case Some(value) =>
+        try {
+          val day = value.toInt
+          if (day > 0 && day <= 31) Valid
+          else Invalid(ValidationError("error.day"))
+        } catch {
+          case _: Throwable => Invalid(ValidationError("error.day"))
+        }
     }
   }
 
@@ -142,13 +159,19 @@ trait DateTimeConstraints {
    * '''name'''[constraint.hour]
    * '''error'''[error.hour]
    */
+
   final val hour: Constraint[Int] = Constraint[Int]("constraint.hour") { o =>
-    if (o == null) Invalid(ValidationError("error.hour")) else try {
-      val hour = o.toInt
-      if (hour >= 0 && hour < 24) Valid
-      else Invalid(ValidationError("error.hour"))
-    } catch {
-      case _: Throwable => Invalid(ValidationError("error.hour"))
+
+    Option(o) match {
+      case Some(hour) =>
+        try {
+          val hourValue = hour.toInt
+          if (hourValue >= 0 && hourValue < 24) Valid
+          else Invalid(ValidationError("error.hour"))
+        } catch {
+          case _: Throwable => Invalid(ValidationError("error.hour"))
+        }
+      case None => Invalid(ValidationError("error.hour"))
     }
   }
 
@@ -159,12 +182,11 @@ trait DateTimeConstraints {
    * '''error'''[error.minute]
    */
   final val minute: Constraint[Int] = Constraint[Int]("constraint.minute") { o =>
-    if (o == null) Invalid(ValidationError("error.minute")) else try {
-      val minute = o.toInt
-      if (minute >= 0 && minute < 60) Valid
-      else Invalid(ValidationError("error.minute"))
-    } catch {
-      case _: Throwable => Invalid(ValidationError("error.minute"))
+    Option(o) match {
+      case Some(value) =>
+        if (value >= 0 && value < 60) Valid
+        else Invalid(ValidationError("error.minute"))
+      case None => Invalid(ValidationError("error.minute"))
     }
   }
 
@@ -175,12 +197,16 @@ trait DateTimeConstraints {
    * '''error'''[error.second]
    */
   final val second: Constraint[Int] = Constraint[Int]("constraint.second") { o =>
-    if (o == null) Invalid(ValidationError("error.second")) else try {
-      val second = o.toInt
-      if (second >= 0 && second < 60) Valid
-      else Invalid(ValidationError("error.second"))
-    } catch {
-      case _: Throwable => Invalid(ValidationError("error.second"))
+    Option(o) match {
+      case Some(value) =>
+        try {
+          val second = value.toInt
+          if (second >= 0 && second < 60) Valid
+          else Invalid(ValidationError("error.second"))
+        } catch {
+          case _: Throwable => Invalid(ValidationError("error.second"))
+        }
+      case None => Invalid(ValidationError("error.second"))
     }
   }
 }
