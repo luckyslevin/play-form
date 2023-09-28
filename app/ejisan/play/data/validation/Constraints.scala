@@ -22,7 +22,6 @@ trait HelperConstraints {
     Option(o) match {
       case Some(char) => Valid // handle the case when o is an Option[Char]
       case None => Invalid(ValidationError("error.required")) // handle the case when o is None
-      case _ => Valid // handle the case when o is a Char value
     }
   }
 

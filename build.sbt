@@ -6,8 +6,8 @@ scalaVersion := "3.3.1"
 
 organization := "com.ejisan"
 
-publishTo := Some(Resolver.file("ejisan", file(Path.userHome.absolutePath+"/Development/repo.ejisan"))(Patterns(true, Resolver.mavenStyleBasePattern)))
+githubOwner := "luckyslevin"
+githubRepository := "play-form"
+githubTokenSource := TokenSource.GitConfig("github.token")
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
-
-// libraryDependencies += "joda-time" % "joda-time" % "2.12.5"
